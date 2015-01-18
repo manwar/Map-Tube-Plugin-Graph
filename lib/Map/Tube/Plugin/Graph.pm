@@ -50,6 +50,19 @@ See the method as_image() defined in the package L<Map::Tube> for more details.
     | labelloc   | No         | top       | Graph label location.              |
     +----------- +------------+---------- +------------------------------------+
 
+=head1 SYNOPSIS
+
+    use strict; use warnings;
+    use MIME::Base64;
+    use Map::Tube::London;
+
+    my $map  = Map::Tube::London->new;
+    my $line = 'Jubilee';
+
+    open(GRAPH, ">${line}.png");
+    print GRAPH decode_base64($map->as_image($line));
+    close(GRAPH);
+
 =head1 METHODS
 
 =head2 as_image()
@@ -61,10 +74,10 @@ Returns image as base64 encoded string.
 sub as_image {
     my ($self) = @_;
 
-    die "ERROR: Key 'tube' is undefined and expects to be an object of Map::Tube."
-        unless (defined $self->tube && ref($self->tube) eq 'Map::Tube');
-    die "ERROR: Key 'line' is undefined and expects to be an object representing the line e.g. Map::Tube::Line."
-        unless (defined $self->line && ref($self->line) eq 'Map::Tube::Line');
+    die "ERROR: Key 'tube' is undefined."                               unless (defined $self->tube);
+    die "ERROR: Key 'tube' expects to have taken role of Map::Tube."    unless (ref($self->tube) && $self->tube->does('Map::Tube'));
+    die "ERROR: Key 'line' is undefined."                               unless (defined $self->line);
+    die "ERROR: Key 'line' expects to be an object of Map::Tube::Line." unless (ref($self->line) && $self->line->isa('Map::Tube::Line'));
 
     my $color = 'brown';
     $color    = $self->line->color if (defined $self->line->color);
