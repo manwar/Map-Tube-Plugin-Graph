@@ -38,17 +38,17 @@ the package L<Map::Tube>, which is just a thin wrapper around the plugin.
 
 See the method as_image() defined in the package L<Map::Tube> for more details.
 
-    +----------- +------------+---------- +------------------------------------+
-    | Key        | Required   | Default   |  Description                       |
-    +----------- +------------+---------- +------------------------------------+
-    | tube       | Yes        | -         | Object of type L<Map::Tube>.       |
-    | line       | Yes        | -         | Object of type L<Map::Tube::Line>. |
-    | color      | No         | black     | Edge color outside of the Line.    |
-    | shape      | No         | oval      | Node shape.                        |
-    | directed   | No         | 1         | Graph direction.                   |
-    | arrowsize  | No         | 1         | Graph arrowsize.                   |
-    | labelloc   | No         | top       | Graph label location.              |
-    +----------- +------------+---------- +------------------------------------+
+    +-----------+----------+---------- +---------------------------------------------+
+    | Key       | Required | Default |  Description                                  |
+    +-----------+----------+---------+-----------------------------------------------+
+    | tube      | Yes      | -       | Object of package with the role L<Map::Tube>. |
+    | line      | Yes      | -       | Object of type L<Map::Tube::Line>.            |
+    | color     | No       | black   | Edge color outside of the Line.               |
+    | shape     | No       | oval    | Node shape.                                   |
+    | directed  | No       | 1       | Graph direction.                              |
+    | arrowsize | No       | 1       | Graph arrowsize.                              |
+    | labelloc  | No       | top     | Graph label location.                         |
+    +-----------+----------+---------+-----------------------------------------------+
 
 =head1 SYNOPSIS
 
@@ -127,7 +127,7 @@ sub as_image {
 
 =head2 tube($tube)
 
-Sets the attribute 'tube', an object of type L<Map::Tube>.
+Sets the attribute 'tube', an object of package with the role L<Map::Tube>.
 
 =head2 tube()
 
