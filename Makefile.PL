@@ -19,9 +19,7 @@ WriteMakefile(
     },
     PREREQ_PM              => {
         'Moo'              => 0,
-        'Moo::Role'        => 0,
         'namespace::clean' => 0,
-        'Throwable'        => 0,
         'GraphViz2'        => 0
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },

@@ -15,10 +15,62 @@ Version 0.01
 use 5.006;
 use Data::Dumper;
 
+use GraphViz2;
 use Moo;
 use namespace::clean;
 
+has 'tube'     => (is => 'ro', required => 1);
+has 'line'     => (is => 'ro', required => 1);
+has 'color'    => (is => 'ro', default  => sub { 'black' });
+has 'shape'    => (is => 'ro', default  => sub { 'oval'  });
+has 'directed' => (is => 'ro', default  => sub { 1       });
+
 =head1 METHODS
+
+=head2 as_png()
+
+=cut
+
+sub as_png {
+    my ($self) = @_;
+
+    my $color = 'brown';
+    $color    = $self->line->color if (defined $self->line->color);
+
+    my $graph = GraphViz2->new(
+        edge   => { color    => $color                    },
+        node   => { shape    => $self->shape              },
+        global => { directed => $self->directed           },
+        graph  => { label    => $label, labelloc => 'top' });
+
+    my $stations = $self->line->get_stations;
+
+    foreach my $node (@$stations) {
+        $graph->add_node(name => $node->name);
+    }
+
+    my $skip = $self->tube->skip;
+    foreach my $node (@$stations) {
+        my $from = $node->name;
+        foreach (split /\,/,$node->link) {
+            my $to = $self->tube->get_node_by_id($_);
+            next if (defined $skip
+                     &&
+                     (exists $skip->{$line}->{$from}->{$to->name}
+                      ||
+                      exists $skip->{$line}->{$to->name}->{$from}));
+
+            if (grep /$line/, (split /\,/, $to->line)) {
+                $graph->add_edge(from => $from, to => $to->name, arrowsize => 1);
+            }
+            else {
+                $graph->add_edge(from => $from, to => $to->name, arrowsize => 1, color => $self->color);
+            }
+        }
+    }
+
+    $graph->run(format => 'png', output_file => "$line.png");
+}
 
 =head1 AUTHOR
 
