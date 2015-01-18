@@ -36,7 +36,8 @@ sub as_png {
 
     my $color = 'brown';
     $color    = $self->line->color if (defined $self->line->color);
-
+    my $line  = $self->line->name;
+    my $label = sprintf("%s: %s", $self->tube->name, $line);
     my $graph = GraphViz2->new(
         edge   => { color    => $color                    },
         node   => { shape    => $self->shape              },
@@ -71,6 +72,7 @@ sub as_png {
 
     $graph->run(format => 'png', output_file => "$line.png");
 }
+
 
 =head1 AUTHOR
 
