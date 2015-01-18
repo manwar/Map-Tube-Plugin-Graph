@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use 5.006;
 use strict;
 use warnings FATAL => 'all';
@@ -20,10 +22,12 @@ WriteMakefile(
     PREREQ_PM              => {
         'Moo'              => 0,
         'namespace::clean' => 0,
-        'GraphViz2'        => 0
+        'GraphViz2'        => 0,
+        'File::Temp'       => 0,
+        'MIME::Base64'     => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean => { FILES => 'Map-Tube-*' },
+    clean => { FILES => 'Map-Tube-Plugin-Graph-*' },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
         resources => {

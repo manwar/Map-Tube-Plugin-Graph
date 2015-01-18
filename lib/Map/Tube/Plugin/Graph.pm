@@ -13,36 +13,70 @@ Version 0.01
 =cut
 
 use 5.006;
-use Data::Dumper;
-
 use GraphViz2;
+use Data::Dumper;
+use MIME::Base64;
+use File::Temp qw(tempfile tempdir);
+
 use Moo;
 use namespace::clean;
 
-has 'tube'     => (is => 'ro', required => 1);
-has 'line'     => (is => 'ro', required => 1);
-has 'color'    => (is => 'ro', default  => sub { 'black' });
-has 'shape'    => (is => 'ro', default  => sub { 'oval'  });
-has 'directed' => (is => 'ro', default  => sub { 1       });
+has 'tube'      => (is => 'rw');
+has 'line'      => (is => 'rw');
+has 'color'     => (is => 'rw', default  => sub { 'black' });
+has 'shape'     => (is => 'rw', default  => sub { 'oval'  });
+has 'directed'  => (is => 'rw', default  => sub { 1       });
+has 'arrowsize' => (is => 'rw', default  => sub { 1       });
+has 'labelloc'  => (is => 'rw', default  => sub { 'top'   });
+
+=head1 DESCRIPTION
+
+The plugin for L<Map::Tube> to create map of individual lines. This  shouldn't be
+used directly. The support for the plugin is defined in L<Map::Tube>.If installed
+then L<Map::Tube> should take care of it. There is a method as_image() defined in
+the package L<Map::Tube>, which is just a thin wrapper around the plugin.
+
+See the method as_image() defined in the package L<Map::Tube> for more details.
+
+    +----------- +------------+---------- +------------------------------------+
+    | Key        | Required   | Default   |  Description                       |
+    +----------- +------------+---------- +------------------------------------+
+    | tube       | Yes        | -         | Object of type L<Map::Tube>.       |
+    | line       | Yes        | -         | Object of type L<Map::Tube::Line>. |
+    | color      | No         | black     | Edge color outside of the Line.    |
+    | shape      | No         | oval      | Node shape.                        |
+    | directed   | No         | 1         | Graph direction.                   |
+    | arrowsize  | No         | 1         | Graph arrowsize.                   |
+    | labelloc   | No         | top       | Graph label location.              |
+    +----------- +------------+---------- +------------------------------------+
 
 =head1 METHODS
 
-=head2 as_png()
+=head2 as_image()
+
+Returns image as base64 encoded string.
 
 =cut
 
-sub as_png {
+sub as_image {
     my ($self) = @_;
+
+    die "ERROR: Key 'tube' is undefined and expects to be an object of Map::Tube."
+        unless (defined $self->tube && ref($self->tube) eq 'Map::Tube');
+    die "ERROR: Key 'line' is undefined and expects to be an object representing the line e.g. Map::Tube::Line."
+        unless (defined $self->line && ref($self->line) eq 'Map::Tube::Line');
 
     my $color = 'brown';
     $color    = $self->line->color if (defined $self->line->color);
     my $line  = $self->line->name;
-    my $label = sprintf("%s: %s", $self->tube->name, $line);
+    my $tube  = $self->tube->name;
+    $tube = 'Map' unless defined $tube;
+    my $label = sprintf("%s: %s", $tube, $line);
     my $graph = GraphViz2->new(
-        edge   => { color    => $color                    },
-        node   => { shape    => $self->shape              },
-        global => { directed => $self->directed           },
-        graph  => { label    => $label, labelloc => 'top' });
+        edge   => { color    => $color                              },
+        node   => { shape    => $self->shape                        },
+        global => { directed => $self->directed                     },
+        graph  => { label    => $label, labelloc => $self->labelloc });
 
     my $stations = $self->line->get_stations;
 
@@ -50,7 +84,8 @@ sub as_png {
         $graph->add_node(name => $node->name);
     }
 
-    my $skip = $self->tube->skip;
+    my $arrowsize = $self->arrowsize;
+    my $skip      = $self->tube->skip;
     foreach my $node (@$stations) {
         my $from = $node->name;
         foreach (split /\,/,$node->link) {
@@ -62,17 +97,36 @@ sub as_png {
                       exists $skip->{$line}->{$to->name}->{$from}));
 
             if (grep /$line/, (split /\,/, $to->line)) {
-                $graph->add_edge(from => $from, to => $to->name, arrowsize => 1);
+                $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize);
             }
             else {
-                $graph->add_edge(from => $from, to => $to->name, arrowsize => 1, color => $self->color);
+                $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize, color => $self->color);
             }
         }
     }
 
-    $graph->run(format => 'png', output_file => "$line.png");
+    my $dir = tempdir(CLEANUP => 1);
+    my ($fh, $filename) = tempfile(DIR => $dir);
+    $graph->run(format => 'png', output_file => "$filename");
+    my $raw_string = do { local $/ = undef; <$fh>; };
+    return encode_base64($raw_string);
 }
 
+=head2 tube($tube)
+
+Sets the attribute 'tube', an object of type L<Map::Tube>.
+
+=head2 tube()
+
+Returns the attribute 'tube'.
+
+=head2 line($line)
+
+Sets the attribute 'line', an object of type L<Map::Tube::Line>.
+
+=head2 line()
+
+Returns the attribute 'line'.
 
 =head1 AUTHOR
 
@@ -81,6 +135,16 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 =head1 REPOSITORY
 
 L<https://github.com/Manwar/Map-Tube-Plugin-Graph>
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<Map::Tube::GraphViz>
+
+=item * L<Map::Metro::Graph>
+
+=back
 
 =head1 BUGS
 
