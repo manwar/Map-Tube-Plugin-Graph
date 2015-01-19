@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.01';
+$Map::Tube::Plugin::Graph::VERSION = '0.02';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for L<Map::Tube>.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -31,12 +31,58 @@ has 'labelloc'  => (is => 'rw', default  => sub { 'top'   });
 
 =head1 DESCRIPTION
 
-The plugin for L<Map::Tube> to create map of individual lines. This  shouldn't be
-used directly. The support for the plugin is defined in L<Map::Tube>.If installed
-then L<Map::Tube> should take care of it. There is a method as_image() defined in
-the package L<Map::Tube>, which is just a thin wrapper around the plugin.
+It is  a  plugin for  L<Map::Tube> to create map of individual lines. This should
+not be used  directly. The support  for the plugin is defined in L<Map::Tube>. If
+installed  then L<Map::Tube> should take care of it. There is a method as_image()
+defined in the package L<Map::Tube>, which is just a very thin wrapper around the
+plugin.
 
 See the method as_image() defined in the package L<Map::Tube> for more details.
+
+=head1 SYNOPSIS
+
+    use strict; use warnings;
+    use MIME::Base64;
+    use Map::Tube::London;
+
+    my $tube = Map::Tube::London->new;
+    my $line = 'Jubilee';
+
+    open($IMAGE, ">$line.png");
+    print $IMAGE decode_base64($tube->as_image($line));
+    close($IMAGE);
+
+=head1 INSTALLATION
+
+The plugin primarily depends on GraphViz2 library. But  the GraphViz2 can only be
+installed if the perl v5.014002 is installed. If your perl  environment satisfies
+this requirement then ignore the rest of instructions.
+
+However I managed to install GraphViz2 on my box with perl v5.10.1. It requires a
+bit of nasty hack. If you are willing to do then follow the steps below:
+
+=over 2
+
+=item * Downnload the tar ball from CPAN.
+        e.g.
+        wget http://search.cpan.org/CPAN/authors/id/R/RS/RSAVAGE/GraphViz2-2.34.tgz
+
+=item * Extract the tar ball i.e. tar -xvzf GraphViz2-2.34.tgz
+
+=item * Change directory to GraphViz2-2.34 i.e. cd GraphViz2-2.34
+
+=item * Edit the Makefile.PL and comment the line (no: 11) that says:
+        require 5.014002; # For the utf8 stuff.
+
+=item * Now follow the usual command to make/test/install. If it complains about
+        missing package then install it on demand one at a time.
+
+=back
+
+=head1 CONSTRUCTOR
+
+The constructor can have the keys from the table below. You wouldn't need to know
+anyway. The package L<Map::Tube> is doing everything for you.
 
     +-----------+----------+---------- +---------------------------------------------+
     | Key       | Required | Default |  Description                                  |
@@ -49,19 +95,6 @@ See the method as_image() defined in the package L<Map::Tube> for more details.
     | arrowsize | No       | 1       | Graph arrowsize.                              |
     | labelloc  | No       | top     | Graph label location.                         |
     +-----------+----------+---------+-----------------------------------------------+
-
-=head1 SYNOPSIS
-
-    use strict; use warnings;
-    use MIME::Base64;
-    use Map::Tube::London;
-
-    my $map  = Map::Tube::London->new;
-    my $line = 'Jubilee';
-
-    open(GRAPH, ">${line}.png");
-    print GRAPH decode_base64($map->as_image($line));
-    close(GRAPH);
 
 =head1 METHODS
 
