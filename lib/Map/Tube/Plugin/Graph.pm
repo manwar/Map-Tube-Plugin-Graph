@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.02';
+$Map::Tube::Plugin::Graph::VERSION = '0.03';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for L<Map::Tube>.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
@@ -48,7 +48,7 @@ See the method as_image() defined in the package L<Map::Tube> for more details.
     my $tube = Map::Tube::London->new;
     my $line = 'Jubilee';
 
-    open($IMAGE, ">$line.png");
+    open(my $IMAGE, ">$line.png");
     print $IMAGE decode_base64($tube->as_image($line));
     close($IMAGE);
 

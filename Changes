@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.03  2015-01-19T12:40:00+01:00
+      - Fixed the code in the pod document about method as_image().
+
 0.02  2015-01-19T12:00:00+01:00
       - Renamed the test script as-image.t to as_image.t.
       - Updated MANIFEST file to reflect the above changes.
