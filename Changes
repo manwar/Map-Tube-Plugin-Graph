@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.05  2015-01-20T10:05:00+01:00
+      - Further more pod document tidied up.
+
 0.04  2015-01-20T00:35:00+01:00
       - Minor pod document changes.
 

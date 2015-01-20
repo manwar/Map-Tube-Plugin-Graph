@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.04';
+$Map::Tube::Plugin::Graph::VERSION = '0.05';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
@@ -58,12 +58,13 @@ The plugin primarily depends on GraphViz2 library. But  the GraphViz2 can only b
 installed if the perl v5.014002 is installed. If your perl  environment satisfies
 this requirement then ignore the rest of instructions.
 
-However I managed to install GraphViz2 on my box with perl v5.10.1. It requires a
-bit of nasty hack. If you are willing to do then follow the steps below:
+Having said that I still managed to install GraphViz2 on my box with perl 5.10.1.
+It requires a  bit of nasty hack. If you are willing to do then follow the steps
+below:
 
 =over 2
 
-=item * Downnload the tar ball from CPAN.
+=item * Download the tar ball from CPAN.
         e.g.
         wget http://search.cpan.org/CPAN/authors/id/R/RS/RSAVAGE/GraphViz2-2.34.tgz
 
@@ -84,17 +85,17 @@ bit of nasty hack. If you are willing to do then follow the steps below:
 The constructor can have the keys from the table below. You wouldn't need to know
 anyway. The package L<Map::Tube> is doing everything for you.
 
-    +-----------+----------+---------- +---------------------------------------------+
-    | Key       | Required | Default |  Description                                  |
-    +-----------+----------+---------+-----------------------------------------------+
-    | tube      | Yes      | -       | Object of package with the role L<Map::Tube>. |
-    | line      | Yes      | -       | Object of type L<Map::Tube::Line>.            |
-    | color     | No       | black   | Edge color outside of the Line.               |
-    | shape     | No       | oval    | Node shape.                                   |
-    | directed  | No       | 1       | Graph direction.                              |
-    | arrowsize | No       | 1       | Graph arrowsize.                              |
-    | labelloc  | No       | top     | Graph label location.                         |
-    +-----------+----------+---------+-----------------------------------------------+
+    +-----------+----------+---------+--------------------------------------------+
+    | Key       | Required | Default |  Description                               |
+    +-----------+----------+---------+--------------------------------------------+
+    | tube      | Yes      | -       | Object of package with the role Map::Tube. |
+    | line      | Yes      | -       | Object of type Map::Tube::Line.            |
+    | color     | No       | black   | Edge color outside of the Line.            |
+    | shape     | No       | oval    | Node shape.                                |
+    | directed  | No       | 1       | Graph direction.                           |
+    | arrowsize | No       | 1       | Graph arrowsize.                           |
+    | labelloc  | No       | top     | Graph label location.                      |
+    +-----------+----------+---------+--------------------------------------------+
 
 =head1 METHODS
 
