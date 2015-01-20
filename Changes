@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.04  2015-01-20T00:35:00+01:00
+      - Minor pod document changes.
+
 0.03  2015-01-19T12:40:00+01:00
       - Fixed the code in the pod document about method as_image().
 
