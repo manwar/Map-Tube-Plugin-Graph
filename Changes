@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.06  2015-01-21T21:15:00+01:00
+      - Updated map label as auto generated.
+
 0.05  2015-01-20T10:05:00+01:00
       - Further more pod document tidied up.
 
