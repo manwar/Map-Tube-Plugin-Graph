@@ -141,7 +141,7 @@ sub as_image {
                       ||
                       exists $skip->{$line}->{$to->name}->{$from}));
 
-            if (grep /$line/, (split /\,/, $to->line)) {
+            if (grep /$line/, (map { $_->name } @{$to->line})) {
                 $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize);
             }
             else {
