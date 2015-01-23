@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.08  2015-01-23T10:15:00+01:00
+      - Patched RT: 101691, although it was raised against Map::Tube.
+
 0.07  2015-01-22T16:25:00+01:00
       - Fixed method _label() throwing error "string ran past end of line".
 

@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.07';
+$Map::Tube::Plugin::Graph::VERSION = '0.08';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
@@ -130,7 +130,7 @@ sub as_image {
     }
 
     my $arrowsize = $self->arrowsize;
-    my $skip      = $self->tube->skip;
+    my $skip      = $self->tube->{skip};
     foreach my $node (@$stations) {
         my $from = $node->name;
         foreach (split /\,/,$node->link) {
