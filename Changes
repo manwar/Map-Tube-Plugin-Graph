@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.09  2015-01-24T17:15:00+01:00
+      - Bundled pull request from TUPINEK.
+
 0.08  2015-01-23T10:15:00+01:00
       - Patched RT: 101691, although it was raised against Map::Tube.
 
