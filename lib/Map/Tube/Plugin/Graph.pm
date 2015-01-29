@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.09';
+$Map::Tube::Plugin::Graph::VERSION = '0.10';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
@@ -16,6 +16,7 @@ use 5.006;
 use GraphViz2;
 use Data::Dumper;
 use MIME::Base64;
+use Graphics::ColorNames;
 use File::Temp qw(tempfile tempdir);
 
 use Moo;
@@ -121,12 +122,12 @@ sub as_image {
         edge   => { color    => $color                              },
         node   => { shape    => $self->shape                        },
         global => { directed => $self->directed                     },
-        graph  => { label    => _label($line, $tube), labelloc => $self->labelloc });
+        graph  => { label    => _label($line, $tube), labelloc => $self->labelloc, bgcolor => _bgcolor($color) });
 
     my $stations = $self->line->get_stations;
 
     foreach my $node (@$stations) {
-        $graph->add_node(name => $node->name);
+        $graph->add_node(name => $node->name, color => $color, fontcolor => $color);
     }
 
     my $arrowsize = $self->arrowsize;
@@ -172,6 +173,46 @@ sub _label {
 sub _timestamp {
     my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
     return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year+1900, $mon+1, $mday, $hour, $min, $sec);
+}
+
+# TODO: Unfinished work, still not getting the right combination.
+sub _bgcolor {
+    my ($color) = @_;
+
+    unless ($color =~ /^#(..)(..)(..)$/) {
+        my $name = Graphics::ColorNames->new('X');
+        $color = $name->hex($color, '#');
+    }
+
+    return _contrast_color($color);
+}
+
+# Code borrowed from http://www.perlmonks.org/?node_id=261561 provided by msemtd.
+sub _contrast_color {
+    my ($color) = @_;
+
+    die "ERROR: Invalid color hex code [$color].\n"
+        unless ($color =~ /^#(..)(..)(..)$/);
+
+    my ($r, $g, $b) = (hex($1), hex($2), hex($3));
+    my %oppcolors = (
+        "00" => "FF",
+        "33" => "FF",
+        "66" => "FF",
+        "99" => "FF",
+        "CC" => "00",
+        "FF" => "00",
+    );
+
+    $r = int($r / 51) * 51;
+    $g = int($g / 51) * 51;
+    $b = int($b / 51) * 51;
+
+    $r = $oppcolors{sprintf("%02X", $r)};
+    $g = $oppcolors{sprintf("%02X", $g)};
+    $b = $oppcolors{sprintf("%02X", $b)};
+
+    return "#$r$g$b";
 }
 
 =head2 tube($tube)

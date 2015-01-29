@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.10  2015-01-29T15:15:00+01:00
+      - Added node text color, boundary color and image background color.
+
 0.09  2015-01-24T17:15:00+01:00
       - Bundled pull request from TUPINEK.
 

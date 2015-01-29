@@ -19,12 +19,13 @@ WriteMakefile(
     BUILD_REQUIRES   => {
         'Test::More' => 0,
     },
-    PREREQ_PM              => {
-        'Moo'              => 0,
-        'namespace::clean' => 0,
-        'GraphViz2'        => 0,
-        'File::Temp'       => 0,
-        'MIME::Base64'     => 0,
+    PREREQ_PM                  => {
+        'Moo'                  => 0,
+        'namespace::clean'     => 0,
+        'GraphViz2'            => 0,
+        'File::Temp'           => 0,
+        'MIME::Base64'         => 0,
+        'Graphics::ColorNames' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Map-Tube-Plugin-Graph-*' },
