@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.11  2015-02-01T19:19:00+01:00
+      - Made edge outside of the current line connected by dashed line.
+
 0.10  2015-01-29T15:15:00+01:00
       - Added node text color, boundary color and image background color.
 

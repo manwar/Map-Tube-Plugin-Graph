@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.10';
+$Map::Tube::Plugin::Graph::VERSION = '0.11';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
@@ -146,7 +146,7 @@ sub as_image {
                 $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize);
             }
             else {
-                $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize, color => $self->color);
+                $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize, color => $self->color, style => 'dashed');
             }
         }
     }
