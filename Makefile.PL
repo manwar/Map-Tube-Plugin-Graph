@@ -20,7 +20,7 @@ WriteMakefile(
         'Test::More' => 0,
     },
     PREREQ_PM                  => {
-        'Moo'                  => 0,
+        'Moo::Role'            => 0,
         'namespace::clean'     => 0,
         'GraphViz2'            => 0,
         'File::Temp'           => 0,

@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.11';
+$Map::Tube::Plugin::Graph::VERSION = '0.12';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
@@ -19,26 +19,20 @@ use MIME::Base64;
 use Graphics::ColorNames;
 use File::Temp qw(tempfile tempdir);
 
-use Moo;
+use Moo::Role;
 use namespace::clean;
 
-has 'tube'      => (is => 'rw');
-has 'line'      => (is => 'rw');
-has 'color'     => (is => 'rw', default  => sub { 'black' });
-has 'shape'     => (is => 'rw', default  => sub { 'oval'  });
-has 'directed'  => (is => 'rw', default  => sub { 1       });
-has 'arrowsize' => (is => 'rw', default  => sub { 1       });
-has 'labelloc'  => (is => 'rw', default  => sub { 'top'   });
+our $STYLE     = 'dashed';
+our $COLOR     = 'black';
+our $SHAPE     = 'oval';
+our $DIRECTED  = 1;
+our $ARROWSIZE = 1;
+our $LABELLOC  = 'top';
 
 =head1 DESCRIPTION
 
-It is  a  plugin for  L<Map::Tube> to create map of individual lines. This should
-not be used  directly. The support  for the plugin is defined in L<Map::Tube>. If
-installed  then L<Map::Tube> should take care of it. There is a method as_image()
-defined in the package L<Map::Tube>, which is just a very thin wrapper around the
-plugin.
-
-See the method as_image() defined in the package L<Map::Tube> for more details.
+It's a graph plugin for L<Map::Tube> to create map of individual lines defined as
+Moo Role. Once installed, it gets plugged into Map::Tube::* family.
 
 =head1 SYNOPSIS
 
@@ -56,8 +50,8 @@ See the method as_image() defined in the package L<Map::Tube> for more details.
 =head1 INSTALLATION
 
 The plugin primarily depends on GraphViz2 library. But  the GraphViz2 can only be
-installed if the perl v5.014002 is installed. If your perl  environment satisfies
-this requirement then ignore the rest of instructions.
+installed  if the perl v5.014002 or above is installed. If your perl  environment
+satisfies this requirement then ignore the rest of instructions.
 
 Having said that I still managed to install GraphViz2 on my box with perl 5.10.1.
 It requires a  bit of nasty hack. If you are willing to do then follow the steps
@@ -81,72 +75,59 @@ below:
 
 =back
 
-=head1 CONSTRUCTOR
-
-The constructor can have the keys from the table below. You wouldn't need to know
-anyway. The package L<Map::Tube> is doing everything for you.
-
-    +-----------+----------+---------+--------------------------------------------+
-    | Key       | Required | Default |  Description                               |
-    +-----------+----------+---------+--------------------------------------------+
-    | tube      | Yes      | -       | Object of package with the role Map::Tube. |
-    | line      | Yes      | -       | Object of type Map::Tube::Line.            |
-    | color     | No       | black   | Edge color outside of the Line.            |
-    | shape     | No       | oval    | Node shape.                                |
-    | directed  | No       | 1       | Graph direction.                           |
-    | arrowsize | No       | 1       | Graph arrowsize.                           |
-    | labelloc  | No       | top     | Graph label location.                      |
-    +-----------+----------+---------+--------------------------------------------+
-
 =head1 METHODS
 
-=head2 as_image()
+=head2 as_image($line_name)
 
 Returns image as base64 encoded string.
 
 =cut
 
 sub as_image {
-    my ($self) = @_;
+    my ($self, $line_name) = @_;
 
-    die "ERROR: Key 'tube' is undefined."                               unless (defined $self->tube);
-    die "ERROR: Key 'tube' expects to have taken role of Map::Tube."    unless (ref($self->tube) && $self->tube->does('Map::Tube'));
-    die "ERROR: Key 'line' is undefined."                               unless (defined $self->line);
-    die "ERROR: Key 'line' expects to be an object of Map::Tube::Line." unless (ref($self->line) && $self->line->isa('Map::Tube::Line'));
+    die "ERROR: Missing line name parameter." unless defined $line_name;
+    my $line = $self->{_lines}->{uc($line_name)};
+    die "ERROR: Invalid line name [$line_name]." unless defined $line;
 
-    my $color = 'brown';
-    $color    = $self->line->color if (defined $self->line->color);
-    my $line  = $self->line->name;
-    my $tube  = $self->tube->name;
-    my $graph = GraphViz2->new(
-        edge   => { color    => $color                              },
-        node   => { shape    => $self->shape                        },
-        global => { directed => $self->directed                     },
-        graph  => { label    => _label($line, $tube), labelloc => $self->labelloc, bgcolor => _bgcolor($color) });
+    my $color  = 'brown';
+    $color     = $line->color if defined $line->color;
+    $line_name = $line->name;
+    my $graph  = GraphViz2->new(
+        edge   => { color    => $color    },
+        node   => { shape    => $SHAPE    },
+        global => { directed => $DIRECTED },
+        graph  => { label    => _label($line_name, $self->name),
+                    labelloc => $LABELLOC,
+                    bgcolor  => _bgcolor($color) });
 
-    my $stations = $self->line->get_stations;
-
+    my $stations = $line->get_stations;
     foreach my $node (@$stations) {
         $graph->add_node(name => $node->name, color => $color, fontcolor => $color);
     }
 
-    my $arrowsize = $self->arrowsize;
-    my $skip      = $self->tube->{skip};
+    my $skip = $self->{skip};
     foreach my $node (@$stations) {
         my $from = $node->name;
         foreach (split /\,/,$node->link) {
-            my $to = $self->tube->get_node_by_id($_);
+            my $to = $self->get_node_by_id($_);
             next if (defined $skip
                      &&
-                     (exists $skip->{$line}->{$from}->{$to->name}
+                     (exists $skip->{$line_name}->{$from}->{$to->name}
                       ||
-                      exists $skip->{$line}->{$to->name}->{$from}));
+                      exists $skip->{$line_name}->{$to->name}->{$from}));
 
-            if (grep /$line/, (map { $_->name } @{$to->line})) {
-                $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize);
+            if (grep /$line_name/, (map { $_->name } @{$to->line})) {
+                $graph->add_edge(from      => $from,
+                                 to        => $to->name,
+                                 arrowsize => $ARROWSIZE);
             }
             else {
-                $graph->add_edge(from => $from, to => $to->name, arrowsize => $arrowsize, color => $self->color, style => 'dashed');
+                $graph->add_edge(from      => $from,
+                                 to        => $to->name,
+                                 arrowsize => $ARROWSIZE,
+                                 color     => $COLOR,
+                                 style     => $STYLE);
             }
         }
     }
@@ -163,11 +144,11 @@ sub as_image {
 # PRIVATE METHODS
 
 sub _label {
-    my ($line, $tube) = @_;
+    my ($line_name, $map_name) = @_;
 
-    $tube = '' unless defined $tube;
+    $map_name = '' unless defined $map_name;
     return sprintf("%s Map: %s Line (Generated by Map::Tube::Plugin::Graph v%s at %s)",
-                   $tube, $line, $Map::Tube::Plugin::Graph::VERSION, _timestamp());
+                   $map_name, $line_name, $Map::Tube::Plugin::Graph::VERSION, _timestamp());
 }
 
 sub _timestamp {
@@ -215,22 +196,6 @@ sub _contrast_color {
     return "#$r$g$b";
 }
 
-=head2 tube($tube)
-
-Sets the attribute 'tube', an object of package with the role L<Map::Tube>.
-
-=head2 tube()
-
-Returns the attribute 'tube'.
-
-=head2 line($line)
-
-Sets the attribute 'line', an object of type L<Map::Tube::Line>.
-
-=head2 line()
-
-Returns the attribute 'line'.
-
 =head1 AUTHOR
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
@@ -246,6 +211,14 @@ L<https://github.com/Manwar/Map-Tube-Plugin-Graph>
 =item * L<Map::Tube::GraphViz>
 
 =item * L<Map::Metro::Graph>
+
+=back
+
+=head1 CONTRIBUTORS
+
+=over 2
+
+=item * Gisbert W. Selke
 
 =back
 
