@@ -1,5 +1,10 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.13  2015-02-10T11:35:00+01:00
+      - Updated method as_image() to generate entire map, if no line name is passed.
+      - Fixed the code in the section SYNOPSIS to run smooth on Windows (thanks to Gisbert W. Selke).
+      - Added new code to the section SYNOPSIS to reflect the changes to the method as_image().
+
 0.12  2015-02-09T23:00:00+01:00
       - Restructured the plugin as Moo Role, as conceived by Gisbert W. Selke.
 

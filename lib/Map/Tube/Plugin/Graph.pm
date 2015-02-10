@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.12';
+$Map::Tube::Plugin::Graph::VERSION = '0.13';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
@@ -22,12 +22,14 @@ use File::Temp qw(tempfile tempdir);
 use Moo::Role;
 use namespace::clean;
 
-our $STYLE     = 'dashed';
-our $COLOR     = 'black';
-our $SHAPE     = 'oval';
-our $DIRECTED  = 1;
-our $ARROWSIZE = 1;
-our $LABELLOC  = 'top';
+our $STYLE      = 'dashed';
+our $NODE_COLOR = 'black';
+our $EDGE_COLOR = 'brown';
+our $SHAPE      = 'oval';
+our $DIRECTED   = 1;
+our $ARROWSIZE  = 1;
+our $LABELLOC   = 'top';
+our $BGCOLOR    = 'grey';
 
 =head1 DESCRIPTION
 
@@ -41,11 +43,20 @@ Moo Role. Once installed, it gets plugged into Map::Tube::* family.
     use Map::Tube::London;
 
     my $tube = Map::Tube::London->new;
-    my $line = 'Jubilee';
 
-    open(my $IMAGE, ">$line.png");
-    print $IMAGE decode_base64($tube->as_image($line));
-    close($IMAGE);
+    # Entire map image
+    my $name = $tube->name;
+    open(my $MAP_IMAGE, ">$name.png");
+    binmode($MAP_IMAGE);
+    print $MAP_IMAGE decode_base64($tube->as_image);
+    close($MAP_IMAGE);
+
+    # Just a particular line map image
+    my $line = 'Bakerloo';
+    open(my $LINE_IMAGE, ">$line.png");
+    binmode($LINE_IMAGE);
+    print $LINE_IMAGE decode_base64($tube->as_image($line));
+    close($LINE_IMAGE);
 
 =head1 INSTALLATION
 
@@ -79,31 +90,51 @@ below:
 
 =head2 as_image($line_name)
 
-Returns image as base64 encoded string.
+The $line_name  param is optional. If it is passed, the method returns the base64
+encoded string of the given line map. Otherwise  you  would get the entire map as
+base64 encoded string.
+
+See SYNOPSIS for more details on how it can be used.
 
 =cut
 
 sub as_image {
     my ($self, $line_name) = @_;
 
-    die "ERROR: Missing line name parameter." unless defined $line_name;
+    (defined $line_name)
+        ?
+        (return $self->_graph_line_image($line_name))
+        :
+        (return $self->_graph_map_image);
+}
+
+#
+#
+# PRIVATE METHODS
+
+sub _graph_line_image {
+    my ($self, $line_name) = @_;
+
     my $line = $self->{_lines}->{uc($line_name)};
     die "ERROR: Invalid line name [$line_name]." unless defined $line;
 
-    my $color  = 'brown';
+    my $color  = $EDGE_COLOR;
     $color     = $line->color if defined $line->color;
     $line_name = $line->name;
     my $graph  = GraphViz2->new(
-        edge   => { color    => $color    },
-        node   => { shape    => $SHAPE    },
-        global => { directed => $DIRECTED },
-        graph  => { label    => _label($line_name, $self->name),
-                    labelloc => $LABELLOC,
-                    bgcolor  => _bgcolor($color) });
+        edge   => { color     => $color,
+                    arrowsize => $ARROWSIZE },
+        node   => { shape     => $SHAPE     },
+        global => { directed  => $DIRECTED  },
+        graph  => { label     => _graph_line_label($line_name, $self->name),
+                    labelloc  => $LABELLOC,
+                    bgcolor   => _graph_bgcolor($color) });
 
     my $stations = $line->get_stations;
     foreach my $node (@$stations) {
-        $graph->add_node(name => $node->name, color => $color, fontcolor => $color);
+        $graph->add_node(name      => $node->name,
+                         color     => $color,
+                         fontcolor => $color);
     }
 
     my $skip = $self->{skip};
@@ -118,46 +149,94 @@ sub as_image {
                       exists $skip->{$line_name}->{$to->name}->{$from}));
 
             if (grep /$line_name/, (map { $_->name } @{$to->line})) {
-                $graph->add_edge(from      => $from,
-                                 to        => $to->name,
-                                 arrowsize => $ARROWSIZE);
+                $graph->add_edge(from => $from, to => $to->name);
             }
             else {
-                $graph->add_edge(from      => $from,
-                                 to        => $to->name,
-                                 arrowsize => $ARROWSIZE,
-                                 color     => $COLOR,
-                                 style     => $STYLE);
+                $graph->add_edge(from  => $from,
+                                 to    => $to->name,
+                                 color => $color,
+                                 style => $STYLE);
             }
         }
     }
+
+    return _graph_encode_image($graph);
+}
+
+sub _graph_map_image {
+    my ($self) = @_;
+
+    my $graph  = GraphViz2->new(
+        node   => { shape     => $SHAPE     },
+        edge   => { arrowsize => $ARROWSIZE },
+        global => { directed  => $DIRECTED  },
+        graph  => { label     => _graph_map_label($self->name),
+                    labelloc  => $LABELLOC,
+                    bgcolor   => $BGCOLOR
+        });
+
+    my $lines    = $self->lines;
+    my $stations = [];
+    foreach my $line (@$lines) {
+        foreach my $station (@{$self->get_stations($line->name)}) {
+            push @$stations, $station;
+            my $color  = $NODE_COLOR;
+            my $_lines = $station->line;
+            $color = $line->color if ((scalar(@$_lines) == 1) && defined $line->color);
+            $graph->add_node(name      => $station->name,
+                             color     => $color,
+                             fontcolor => $color);
+        }
+    }
+
+    my $seen = {};
+    foreach my $station (@$stations) {
+        my $from = $station->name;
+        foreach (split /\,/,$station->link) {
+            my $to = $self->get_node_by_id($_);
+            next if $seen->{$from}->{$to->name};
+            $graph->add_edge(from => $from, to => $to->name);
+            $seen->{$from}->{$to->name} = 1;
+        }
+    }
+
+    return _graph_encode_image($graph);
+}
+
+sub _graph_encode_image {
+    my ($graph) = @_;
 
     my $dir = tempdir(CLEANUP => 1);
     my ($fh, $filename) = tempfile(DIR => $dir);
     $graph->run(format => 'png', output_file => "$filename");
     my $raw_string = do { local $/ = undef; <$fh>; };
+
     return encode_base64($raw_string);
 }
 
-#
-#
-# PRIVATE METHODS
-
-sub _label {
+sub _graph_line_label {
     my ($line_name, $map_name) = @_;
 
     $map_name = '' unless defined $map_name;
     return sprintf("%s Map: %s Line (Generated by Map::Tube::Plugin::Graph v%s at %s)",
-                   $map_name, $line_name, $Map::Tube::Plugin::Graph::VERSION, _timestamp());
+                   $map_name, $line_name, $Map::Tube::Plugin::Graph::VERSION, _graph_timestamp());
 }
 
-sub _timestamp {
+sub _graph_map_label {
+    my ($map_name) = @_;
+
+    $map_name = '' unless defined $map_name;
+    return sprintf("%s Map (Generated by Map::Tube::Plugin::Graph v%s at %s)",
+                   $map_name, $map_name, $Map::Tube::Plugin::Graph::VERSION, _graph_timestamp());
+}
+
+sub _graph_timestamp {
     my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
     return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year+1900, $mon+1, $mday, $hour, $min, $sec);
 }
 
 # TODO: Unfinished work, still not getting the right combination.
-sub _bgcolor {
+sub _graph_bgcolor {
     my ($color) = @_;
 
     unless ($color =~ /^#(..)(..)(..)$/) {
@@ -165,11 +244,11 @@ sub _bgcolor {
         $color = $name->hex($color, '#');
     }
 
-    return _contrast_color($color);
+    return _graph_contrast_color($color);
 }
 
 # Code borrowed from http://www.perlmonks.org/?node_id=261561 provided by msemtd.
-sub _contrast_color {
+sub _graph_contrast_color {
     my ($color) = @_;
 
     die "ERROR: Invalid color hex code [$color].\n"
