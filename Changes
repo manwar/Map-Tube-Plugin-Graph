@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.14  2015-02-10T12:00:00+01:00
+      - Updated method _graph_map_label() to the generate the label for map correctly.
+
 0.13  2015-02-10T11:35:00+01:00
       - Updated method as_image() to generate entire map, if no line name is passed.
       - Fixed the code in the section SYNOPSIS to run smooth on Windows (thanks to Gisbert W. Selke).
