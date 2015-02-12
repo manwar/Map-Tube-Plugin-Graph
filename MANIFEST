@@ -1,5 +1,6 @@
 Changes
 lib/Map/Tube/Plugin/Graph.pm
+lib/Map/Tube/Utils/Graph.pm
 Makefile.PL
 LICENSE
 MANIFEST
