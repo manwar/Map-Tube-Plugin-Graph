@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.16  2015-02-12T00:30:00+01:00
+      - Tidied up pod document of Map::Tube::Utils::Graph.
+
 0.15  2015-02-12T00:05:00+01:00
       - Refactored the plugin code and moved private methods to separate package.
 

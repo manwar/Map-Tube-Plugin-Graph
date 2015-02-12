@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.15';
+$Map::Tube::Plugin::Graph::VERSION = '0.16';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.15
+Version 0.16
 
 =cut
 

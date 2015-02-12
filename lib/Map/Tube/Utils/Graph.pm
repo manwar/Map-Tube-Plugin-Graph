@@ -1,6 +1,6 @@
 package Map::Tube::Utils::Graph;
 
-$Map::Tube::Utils::Graph::VERSION = '0.15';
+$Map::Tube::Utils::Graph::VERSION = '0.16';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Utils::Graph - Helper package for Map::Tube::Plugin::Graph.
 
 =head1 VERSION
 
-Version 0.15
+Version 0.16
 
 =cut
 
@@ -45,9 +45,9 @@ B<FOR INTERNAL USE ONLY>
 # PRIVATE METHODS
 
 sub _graph_line_image {
-    my ($self, $line_name) = @_;
+    my ($map, $line_name) = @_;
 
-    my $line = $self->{_lines}->{uc($line_name)};
+    my $line = $map->{_lines}->{uc($line_name)};
     die "ERROR: Invalid line name [$line_name]." unless defined $line;
 
     my $color  = $EDGE_COLOR;
@@ -58,7 +58,7 @@ sub _graph_line_image {
                     arrowsize => $ARROWSIZE },
         node   => { shape     => $SHAPE     },
         global => { directed  => $DIRECTED  },
-        graph  => { label     => _graph_line_label($line_name, $self->name),
+        graph  => { label     => _graph_line_label($line_name, $map->name),
                     labelloc  => $LABELLOC,
                     bgcolor   => _graph_bgcolor($color) });
 
@@ -69,11 +69,11 @@ sub _graph_line_image {
                          fontcolor => $color);
     }
 
-    my $skip = $self->{skip};
+    my $skip = $map->{skip};
     foreach my $node (@$stations) {
         my $from = $node->name;
         foreach (split /\,/,$node->link) {
-            my $to = $self->get_node_by_id($_);
+            my $to = $map->get_node_by_id($_);
             next if (defined $skip
                      &&
                      (exists $skip->{$line_name}->{$from}->{$to->name}
@@ -96,21 +96,21 @@ sub _graph_line_image {
 }
 
 sub _graph_map_image {
-    my ($self) = @_;
+    my ($map) = @_;
 
     my $graph  = GraphViz2->new(
         node   => { shape     => $SHAPE     },
         edge   => { arrowsize => $ARROWSIZE },
         global => { directed  => $DIRECTED  },
-        graph  => { label     => _graph_map_label($self->name),
+        graph  => { label     => _graph_map_label($map->name),
                     labelloc  => $LABELLOC,
                     bgcolor   => $BGCOLOR
         });
 
-    my $lines    = $self->lines;
+    my $lines    = $map->lines;
     my $stations = [];
     foreach my $line (@$lines) {
-        foreach my $station (@{$self->get_stations($line->name)}) {
+        foreach my $station (@{$map->get_stations($line->name)}) {
             push @$stations, $station;
             my $color  = $NODE_COLOR;
             my $_lines = $station->line;
@@ -125,7 +125,7 @@ sub _graph_map_image {
     foreach my $station (@$stations) {
         my $from = $station->name;
         foreach (split /\,/,$station->link) {
-            my $to = $self->get_node_by_id($_);
+            my $to = $map->get_node_by_id($_);
             next if $seen->{$from}->{$to->name};
             $graph->add_edge(from => $from, to => $to->name);
             $seen->{$from}->{$to->name} = 1;
@@ -214,24 +214,6 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 =head1 REPOSITORY
 
 L<https://github.com/Manwar/Map-Tube-Plugin-Graph>
-
-=head1 SEE ALSO
-
-=over 4
-
-=item * L<Map::Tube::GraphViz>
-
-=item * L<Map::Metro::Graph>
-
-=back
-
-=head1 CONTRIBUTORS
-
-=over 2
-
-=item * Gisbert W. Selke
-
-=back
 
 =head1 BUGS
 
