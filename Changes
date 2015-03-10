@@ -1,5 +1,11 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.18  2015-03-10T13:30:00+01:00
+      - Fixed typo in the package name Map::Tube::Plugin::Graph::Utils.
+      - Renamed method _graph_line_image() to graph_line_image().
+      - Renamed method _graph_map_image() to graph_map_image().
+      - Updated package Map::Tube::Plugin::Graph to respect the above changes.
+
 0.17  2015-03-10T10:40:00+01:00
       - Renamed package Map::Tube::Utils::Graph to Map::Tube::Plugin::Graph::Utils.
       - Updated test script t/00-load.t accordingly.

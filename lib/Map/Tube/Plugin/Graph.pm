@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.17';
+$Map::Tube::Plugin::Graph::VERSION = '0.18';
 
 =head1 NAME
 
@@ -8,13 +8,13 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.17
+Version 0.18
 
 =cut
 
 use 5.006;
 use Data::Dumper;
-use Map::Tube::Plugin::Graph::Utils qw(_graph_line_image _graph_map_image);
+use Map::Tube::Plugin::Graph::Utils qw(graph_line_image graph_map_image);
 
 use Moo::Role;
 use namespace::clean;
@@ -91,9 +91,9 @@ sub as_image {
 
     (defined $line_name)
         ?
-        (return _graph_line_image($self, $line_name))
+        (return graph_line_image($self, $line_name))
         :
-        (return _graph_map_image($self));
+        (return graph_map_image($self));
 }
 
 =head1 AUTHOR

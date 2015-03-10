@@ -1,21 +1,21 @@
 package Map::Tube::Plugin::Graph::Utils;
 
-$Map::Tube::Plugin::Graph::Utils::VERSION = '0.17';
+$Map::Tube::Plugin::Graph::Utils::VERSION = '0.18';
 
 =head1 NAME
 
-Map::Tube::Pluging::Graph::Utils - Helper package for Map::Tube::Plugin::Graph.
+Map::Tube::Plugin::Graph::Utils - Helper package for Map::Tube::Plugin::Graph.
 
 =head1 VERSION
 
-Version 0.17
+Version 0.18
 
 =cut
 
 use vars qw(@ISA @EXPORT_OK);
 require Exporter;
 @ISA       = qw(Exporter);
-@EXPORT_OK = qw(_graph_line_image _graph_map_image);
+@EXPORT_OK = qw(graph_line_image graph_map_image);
 
 use 5.006;
 use strict; use warnings;
@@ -40,11 +40,7 @@ B<FOR INTERNAL USE ONLY>
 
 =cut
 
-#
-#
-# PRIVATE METHODS
-
-sub _graph_line_image {
+sub graph_line_image {
     my ($map, $line_name) = @_;
 
     my $line = $map->{_lines}->{uc($line_name)};
@@ -95,7 +91,7 @@ sub _graph_line_image {
     return _graph_encode_image($graph);
 }
 
-sub _graph_map_image {
+sub graph_map_image {
     my ($map) = @_;
 
     my $graph  = GraphViz2->new(
@@ -134,6 +130,10 @@ sub _graph_map_image {
 
     return _graph_encode_image($graph);
 }
+
+#
+#
+# PRIVATE METHODS
 
 sub _graph_encode_image {
     my ($graph) = @_;
