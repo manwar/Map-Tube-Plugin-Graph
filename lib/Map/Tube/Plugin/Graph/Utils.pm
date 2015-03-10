@@ -1,18 +1,18 @@
-package Map::Tube::Utils::Graph;
+package Map::Tube::Plugin::Graph::Utils;
 
-$Map::Tube::Utils::Graph::VERSION = '0.16';
+$Map::Tube::Plugin::Graph::Utils::VERSION = '0.17';
 
 =head1 NAME
 
-Map::Tube::Utils::Graph - Helper package for Map::Tube::Plugin::Graph.
+Map::Tube::Pluging::Graph::Utils - Helper package for Map::Tube::Plugin::Graph.
 
 =head1 VERSION
 
-Version 0.16
+Version 0.17
 
 =cut
 
-use vars qw(@ISA @EXPORT @EXPORT_OK);
+use vars qw(@ISA @EXPORT_OK);
 require Exporter;
 @ISA       = qw(Exporter);
 @EXPORT_OK = qw(_graph_line_image _graph_map_image);
@@ -226,7 +226,7 @@ bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Map::Tube::Utils::Graph
+    perldoc Map::Tube::Plugin::Graph::Utils
 
 You can also look for information at:
 
@@ -290,4 +290,4 @@ OF THE PACKAGE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of Map::Tube::Utils::Graph
+1; # End of Map::Tube::Plugin::Graph::Utils

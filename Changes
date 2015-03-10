@@ -1,5 +1,9 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.17  2015-03-10T10:40:00+01:00
+      - Renamed package Map::Tube::Utils::Graph to Map::Tube::Plugin::Graph::Utils.
+      - Updated test script t/00-load.t accordingly.
+
 0.16  2015-02-12T00:30:00+01:00
       - Tidied up pod document of Map::Tube::Utils::Graph.
 

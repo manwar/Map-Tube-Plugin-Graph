@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION = '0.16';
+$Map::Tube::Plugin::Graph::VERSION = '0.17';
 
 =head1 NAME
 
@@ -8,13 +8,13 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.16
+Version 0.17
 
 =cut
 
 use 5.006;
 use Data::Dumper;
-use Map::Tube::Utils::Graph qw(_graph_line_image _graph_map_image);
+use Map::Tube::Plugin::Graph::Utils qw(_graph_line_image _graph_map_image);
 
 use Moo::Role;
 use namespace::clean;
@@ -78,7 +78,7 @@ below:
 
 =head2 as_image($line_name)
 
-The $line_name  param is optional. If it is passed, the method returns the base64
+The C<$line_name> param is optional.If it's passed, the method returns the base64
 encoded string of the given line map. Otherwise  you  would get the entire map as
 base64 encoded string.
 
@@ -161,8 +161,8 @@ L<http://search.cpan.org/dist/Map-Tube-Plugin-Graph/>
 
 Copyright (C) 2015 Mohammad S Anwar.
 
-This  program  is  free software; you can redistribute it and/or modify it under
-the  terms  of the the Artistic License (2.0). You may obtain a copy of the full
+This program  is  free software; you can redistribute it and / or modify it under
+the  terms  of the the Artistic License (2.0). You may obtain a  copy of the full
 license at:
 
 L<http://www.perlfoundation.org/artistic_license_2_0>
