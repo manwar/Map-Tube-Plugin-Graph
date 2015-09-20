@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph::Utils;
 
-$Map::Tube::Plugin::Graph::Utils::VERSION = '0.18';
+$Map::Tube::Plugin::Graph::Utils::VERSION = '0.19';
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Map::Tube::Plugin::Graph::Utils - Helper package for Map::Tube::Plugin::Graph.
 
 =head1 VERSION
 
-Version 0.18
+Version 0.19
 
 =cut
 
@@ -23,6 +23,8 @@ use GraphViz2;
 use Data::Dumper;
 use MIME::Base64;
 use Graphics::ColorNames;
+use Map::Tube::Exception::MissingLineName;
+use Map::Tube::Exception::InvalidLineName;
 use File::Temp qw(tempfile tempdir);
 
 our $STYLE      = 'dashed';
@@ -43,8 +45,23 @@ B<FOR INTERNAL USE ONLY>
 sub graph_line_image {
     my ($map, $line_name) = @_;
 
+    my @caller = caller(0);
+    @caller = caller(2) if $caller[3] eq '(eval)';
+
+    Map::Tube::Exception::MissingLineName->throw({
+        method      => __PACKAGE__."::graph_line_image",
+        message     => "ERROR: Missing Line name.",
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless defined $line_name;
+
     my $line = $map->{_lines}->{uc($line_name)};
-    die "ERROR: Invalid line name [$line_name]." unless defined $line;
+    Map::Tube::Exception::InvalidLineName->throw({
+        method      => __PACKAGE__."::_validate_param",
+        message     => "ERROR: Invalid Line name [$line].",
+        filename    => $caller[1],
+        line_number => $caller[2] })
+        unless defined $line;
 
     my $color  = $EDGE_COLOR;
     $color     = $line->color if defined $line->color;
