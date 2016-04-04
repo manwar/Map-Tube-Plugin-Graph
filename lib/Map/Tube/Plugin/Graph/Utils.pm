@@ -1,6 +1,7 @@
 package Map::Tube::Plugin::Graph::Utils;
 
-$Map::Tube::Plugin::Graph::Utils::VERSION = '0.19';
+$Map::Tube::Plugin::Graph::Utils::VERSION   = '0.20';
+$Map::Tube::Plugin::Graph::Utils::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
 
@@ -8,7 +9,7 @@ Map::Tube::Plugin::Graph::Utils - Helper package for Map::Tube::Plugin::Graph.
 
 =head1 VERSION
 
-Version 0.19
+Version 0.20
 
 =cut
 
@@ -123,6 +124,8 @@ sub graph_map_image {
     my $lines    = $map->lines;
     my $stations = [];
     foreach my $line (@$lines) {
+        next unless defined ($line->name);
+
         foreach my $station (@{$map->get_stations($line->name)}) {
             push @$stations, $station;
             my $color  = $NODE_COLOR;
@@ -230,7 +233,7 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 REPOSITORY
 
-L<https://github.com/Manwar/Map-Tube-Plugin-Graph>
+L<https://github.com/manwar/Map-Tube-Plugin-Graph>
 
 =head1 BUGS
 
@@ -269,7 +272,7 @@ L<http://search.cpan.org/dist/Map-Tube-Plugin-Graph/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2015 Mohammad S Anwar.
+Copyright (C) 2015 - 2016 Mohammad S Anwar.
 
 This  program  is  free software; you can redistribute it and/or modify it under
 the  terms  of the the Artistic License (2.0). You may obtain a copy of the full

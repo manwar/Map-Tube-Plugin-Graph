@@ -1,5 +1,11 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.20  2016-04-04T14:10:00+01:00
+      - Fixed method Map::Tube::Plugin::Graph::Utils::graph_map_image() to handle line with no stations.
+      - Added $AUTHORITY to the distribution.
+      - Updated unit test scripts (t/00-load.t, t/pod.t and t/manifest.t).
+      - Updated copyright year information.
+
 0.19  2015-09-20T09:45:00+01:00
       - Replaced die() with exception Map::Tube::Exception::*.
 
