@@ -25,7 +25,7 @@ WriteMakefile(
         'File::Temp'           => '0.2304',
         'MIME::Base64'         => '3.14',
         'Graphics::ColorNames' => '2.11',
-        'Map::Tube::Exception' => '3.01',
+        'Map::Tube::Exception' => '3.06',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Map-Tube-Plugin-Graph-*' },

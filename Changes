@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.21  2016-09-13T09:20:00+01:00
+      - Upgraded dependency on Map::Tube::Exception v3.06.
+
 0.20  2016-04-04T14:10:00+01:00
       - Fixed method Map::Tube::Plugin::Graph::Utils::graph_map_image() to handle line with no stations.
       - Added $AUTHORITY to the distribution.
