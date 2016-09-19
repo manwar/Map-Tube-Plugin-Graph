@@ -31,6 +31,10 @@ WriteMakefile(
     clean => { FILES => 'Map-Tube-Plugin-Graph-*' },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
         'meta-spec' => { version => 2 },
+        provides    => {
+            'Map::Tube::Plugin::Graph'        => { file => 'lib/Map/Tube/Plugin/Graph.pm',       version => '0.22' },
+            'Map::Tube::Plugin::Graph::Utils' => { file => 'lib/Map/Tube/Plugin/Graph/Utils.pm', version => '0.22' },
+        },
         resources => {
             repository => {
                 type => 'git',

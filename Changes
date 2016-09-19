@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.22  2016-09-19T11:10:00+01:00
+      - Added key 'provides' to the Makefile.PL script.
+
 0.21  2016-09-13T09:20:00+01:00
       - Upgraded dependency on Map::Tube::Exception v3.06.
 
