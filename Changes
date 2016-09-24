@@ -1,5 +1,8 @@
 Revision history for Map::Tube::Plugin::Graph
 
+0.23  2016-09-24T23:10:00+01:00
+      - Add test scripts (t/meta-json.t and t/meta-yml.t).
+
 0.22  2016-09-19T11:10:00+01:00
       - Added key 'provides' to the Makefile.PL script.
 
