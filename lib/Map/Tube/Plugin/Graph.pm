@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION   = '0.28';
+$Map::Tube::Plugin::Graph::VERSION   = '0.29';
 $Map::Tube::Plugin::Graph::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.28
+Version 0.29
 
 =cut
 
@@ -18,7 +18,7 @@ use Data::Dumper;
 use Map::Tube::Plugin::Graph::Utils qw(graph_line_image graph_map_image);
 
 use Moo::Role;
-use namespace::clean;
+use namespace::autoclean;
 
 =head1 DESCRIPTION
 
