@@ -51,31 +51,8 @@ Moo Role. Once installed, it gets plugged into Map::Tube::* family.
 
 =head1 INSTALLATION
 
-The plugin primarily depends on GraphViz2 library. But  the GraphViz2 can only be
-installed  if the perl v5.014002 or above is installed. If your perl  environment
-satisfies this requirement then ignore the rest of instructions.
-
-Having said that I still managed to install GraphViz2 on my box with perl 5.10.1.
-It requires a  bit of nasty hack. If you are willing to do then follow the steps
-below:
-
-=over 2
-
-=item * Download the tar ball from CPAN.
-        e.g.
-        wget http://search.cpan.org/CPAN/authors/id/R/RS/RSAVAGE/GraphViz2-2.34.tgz
-
-=item * Extract the tar ball i.e. tar -xvzf GraphViz2-2.34.tgz
-
-=item * Change directory to GraphViz2-2.34 i.e. cd GraphViz2-2.34
-
-=item * Edit the Makefile.PL and comment the line (no: 11) that says:
-        require 5.014002; # For the utf8 stuff.
-
-=item * Now follow the usual command to make/test/install. If it complains about
-        missing package then install it on demand one at a time.
-
-=back
+The plugin primarily depends on GraphViz2 library. But GraphViz2 as of 2.61 can only be
+installed  on perl v5.008008 or above.
 
 =head1 METHODS
 
