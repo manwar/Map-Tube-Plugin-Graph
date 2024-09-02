@@ -17,7 +17,6 @@ use 5.006;
 use strict; use warnings;
 use GraphViz2;
 use Data::Dumper;
-use MIME::Base64;
 use Map::Tube::Utils qw(is_valid_color);
 use Map::Tube::Exception::MissingLineName;
 use Map::Tube::Exception::InvalidLineName;
@@ -163,7 +162,7 @@ sub graph_map_image {
 sub _graph_encode_image {
     my ($graph) = @_;
     $graph->run(format => 'png');
-    return encode_base64($graph->dot_output);
+    return $graph->dot_output;
 }
 
 sub _graph_line_label {

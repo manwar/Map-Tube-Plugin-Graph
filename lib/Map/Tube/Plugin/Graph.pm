@@ -16,6 +16,7 @@ Version 0.43
 use 5.006;
 use Data::Dumper;
 use Map::Tube::Plugin::Graph::Utils qw(graph_line_image graph_map_image);
+use MIME::Base64;
 
 use Moo::Role;
 use namespace::autoclean;
@@ -76,12 +77,11 @@ See L</SYNOPSIS> for more details on how it can be used.
 
 sub as_image {
     my ($self, $line_name) = @_;
-
-    (defined $line_name)
+    return encode_base64(defined $line_name
         ?
-        (return graph_line_image($self, $line_name))
+        graph_line_image($self, $line_name)
         :
-        (return graph_map_image($self));
+        graph_map_image($self));
 }
 
 =head1 AUTHOR
