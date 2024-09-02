@@ -107,7 +107,7 @@ sub graph_line_image {
         }
     }
 
-    return _graph_encode_image($graph);
+    $graph->run(format => 'png')->dot_output;
 }
 
 sub graph_map_image {
@@ -152,18 +152,12 @@ sub graph_map_image {
         }
     }
 
-    return _graph_encode_image($graph);
+    $graph->run(format => 'png')->dot_output;
 }
 
 #
 #
 # PRIVATE METHODS
-
-sub _graph_encode_image {
-    my ($graph) = @_;
-    $graph->run(format => 'png');
-    return $graph->dot_output;
-}
 
 sub _graph_line_label {
     my ($line_name, $map_name) = @_;
