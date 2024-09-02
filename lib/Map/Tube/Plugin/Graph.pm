@@ -33,6 +33,10 @@ Moo Role. Once installed, it gets plugged into Map::Tube::* family.
 
     my $tube = Map::Tube::London->new;
 
+    # Entire map image to STDOUT
+    binmode(STDOUT);
+    print STDOUT decode_base64($tube->as_image);
+
     # Entire map image
     my $name = $tube->name;
     open(my $MAP_IMAGE, ">", "$name.png")
