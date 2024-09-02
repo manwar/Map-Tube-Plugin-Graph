@@ -1,12 +1,12 @@
-#!/usr/bin/perl
-
-use 5.006;
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 use Test::More;
+use ExtUtils::Manifest;
 
-my $min_tcm = 0.9;
-eval "use Test::CheckManifest $min_tcm";
-plan skip_all => "Test::CheckManifest $min_tcm required" if $@;
+unless ( $ENV{RELEASE_TESTING} ) {
+    plan( skip_all => "Author tests not required for installation" );
+}
+plan tests => 2;
 
-ok_manifest();
+is_deeply [ ExtUtils::Manifest::manicheck() ], [], 'missing';
+is_deeply [ ExtUtils::Manifest::filecheck() ], [], 'extra';
