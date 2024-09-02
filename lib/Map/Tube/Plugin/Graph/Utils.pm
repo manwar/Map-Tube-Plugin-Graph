@@ -23,7 +23,6 @@ use Map::Tube::Exception::MissingLineName;
 use Map::Tube::Exception::InvalidLineName;
 use Map::Tube::Exception::InvalidColorName;
 use Map::Tube::Exception::InvalidColorHexCode;
-use File::Temp qw(tempfile tempdir);
 use parent 'Exporter';
 
 our @EXPORT_OK = qw(graph_line_image graph_map_image);
@@ -163,13 +162,8 @@ sub graph_map_image {
 
 sub _graph_encode_image {
     my ($graph) = @_;
-
-    my $dir = tempdir(CLEANUP => 1);
-    my ($fh, $filename) = tempfile(DIR => $dir);
-    $graph->run(format => 'png', output_file => "$filename");
-    my $raw_string = do { local $/ = undef; <$fh>; };
-
-    return encode_base64($raw_string);
+    $graph->run(format => 'png');
+    return encode_base64($graph->dot_output);
 }
 
 sub _graph_line_label {
@@ -311,7 +305,7 @@ not accept this license.
 
 If your Modified Version has been derived from a Modified Version made by someone
 other than you,you are nevertheless required to ensure that your Modified Version
- complies with the requirements of this license.
+complies with the requirements of this license.
 
 This  license  does  not grant you the right to use any trademark,  service mark,
 tradename, or logo of the Copyright Holder.
