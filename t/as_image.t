@@ -10,4 +10,7 @@ is $@, '';
 eval { $tube->as_image('Bakerloo'); };
 is $@, '';
 
+eval { $tube->as_png('Bakerloo'); };
+is $@, '';
+
 done_testing;

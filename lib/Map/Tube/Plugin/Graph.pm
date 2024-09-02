@@ -36,7 +36,7 @@ Moo Role. Once installed, it gets plugged into Map::Tube::* family.
 
     # Entire map image to STDOUT
     binmode(STDOUT);
-    print STDOUT decode_base64($tube->as_image);
+    print STDOUT $tube->as_png;
 
     # Entire map image
     my $name = $tube->name;
@@ -65,10 +65,26 @@ For example, on my Windows 11 box running WSL2 (Ubuntu 24.04 LTS), try this:
 
 =head1 METHODS
 
+=head2 as_png($line_name)
+
+The C<$line_name> param is optional. If it's passed, the method returns
+the given line map. Otherwise you get the entire map.
+
+See L</SYNOPSIS> for more details on how it can be used.
+
+=cut
+
+sub as_png {
+  my ($self, $line_name) = @_;
+  defined $line_name
+    ? graph_line_image($self, $line_name)
+    : graph_map_image($self);
+}
+
 =head2 as_image($line_name)
 
-The C<$line_name> param is optional.If it's passed, the method returns the base64
-encoded string of the given line map. Otherwise  you  would get the entire map as
+The C<$line_name> param is optional. If it's passed, the method returns the base64
+encoded string of the given line map. Otherwise you would get the entire map as
 base64 encoded string.
 
 See L</SYNOPSIS> for more details on how it can be used.
@@ -76,12 +92,8 @@ See L</SYNOPSIS> for more details on how it can be used.
 =cut
 
 sub as_image {
-    my ($self, $line_name) = @_;
-    return encode_base64(defined $line_name
-        ?
-        graph_line_image($self, $line_name)
-        :
-        graph_map_image($self));
+  my ($self, $line_name) = @_;
+  encode_base64($self->as_png($line_name));
 }
 
 =head1 AUTHOR
