@@ -21,7 +21,7 @@ WriteMakefile(
     PREREQ_PM                  => {
         'Moo::Role'            => '2.000000',
         'namespace::autoclean' => '0.28',
-        'GraphViz2'            => '2.34',
+        'GraphViz2'            => '2.63',
         'MIME::Base64'         => '3.14',
         'Map::Tube'            => '3.64',
         'Map::Tube::Exception' => '3.18',

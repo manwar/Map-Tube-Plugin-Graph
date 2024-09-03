@@ -112,43 +112,27 @@ sub graph_line_image {
 
 sub graph_map_image {
     my ($map) = @_;
-
     my $bgcolor = $map->bgcolor;
     $bgcolor = $BGCOLOR unless defined $bgcolor;
-
-    my $graph  = GraphViz2->new(
+    my $g = $map->as_graph;
+    $g->set_graph_attribute(graphviz => {
         node   => { shape     => $SHAPE, color => $NODE_COLOR, fontcolor => $NODE_COLOR },
         edge   => { arrowsize => $ARROWSIZE },
-        global => { directed  => $DIRECTED  },
         graph  => { label     => _graph_map_label($map->name),
                     labelloc  => $LABELLOC,
                     bgcolor   => $bgcolor
-        });
-
-    my (@stations, %station2colour, %station_seen);
-    foreach my $line (grep defined $_->name, @{$map->lines}) {
-        foreach my $station (@{$map->get_stations($line->name)}) {
-            next if $station_seen{$station->name}++;
-            push @stations, $station;
-            my $_lines = $station->line;
-            next unless @$_lines == 1 && defined $line->color;
-            $station2colour{$station->name} = $line->color;
         }
+    });
+    my $l2c = $g->get_graph_attribute('line2colour');
+    for my $v ($g->vertices) {
+      my %lines; @lines{map $g->get_multiedge_ids(@$_), $g->edges_at($v)} = ();
+      next if keys %lines != 1;
+      my $l = (keys %lines)[0];
+      next unless defined (my $color = $l2c->{$l});
+      $g->set_vertex_attribute($v, graphviz=>{color => $color, fontcolor => $color});
     }
-
-    my %seen;
-    foreach my $station (sort {$a->name cmp $b->name} @stations) {
-        my $from = $station->name;
-        foreach (sort split /\,/,$station->link) {
-            my $to = $map->get_node_by_id($_)->name;
-            next if $seen{$from}{$to}++;
-            $graph->add_node(name => $from, color => $station2colour{$from}, fontcolor => delete $station2colour{$from})
-              if exists $station2colour{$from};
-            $graph->add_edge(from => $from, to => $to);
-        }
-    }
-
-    $graph->run(format => 'png')->dot_output;
+    my %seen; $g->filter_edges(sub { !$seen{$_[1]}{$_[2]}++ });
+    GraphViz2->from_graph($g)->run(format => 'png')->dot_output;
 }
 
 #
