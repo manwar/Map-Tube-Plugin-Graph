@@ -77,16 +77,13 @@ sub graph_line_image {
                     labelloc  => $LABELLOC,
                     bgcolor   => $bgcolor });
 
+    my $skip = $map->{skip};
     my @stations = @{$line->get_stations};
-    foreach my $node (@stations) {
-        $graph->add_node(name      => $node->name,
+    foreach my $node (sort {$a->name cmp $b->name} @stations) {
+        my $from = $node->name;
+        $graph->add_node(name      => $from,
                          color     => $color,
                          fontcolor => $color);
-    }
-
-    my $skip = $map->{skip};
-    foreach my $node (@stations) {
-        my $from = $node->name;
         foreach (split /\,/,$node->link) {
             my $to = $map->get_node_by_id($_);
             next if (defined $skip
@@ -101,7 +98,6 @@ sub graph_line_image {
             else {
                 $graph->add_edge(from  => $from,
                                  to    => $to->name,
-                                 color => $color,
                                  style => $STYLE);
             }
         }
