@@ -68,42 +68,34 @@ sub graph_line_image {
     my $bgcolor = $map->bgcolor;
     $bgcolor    = _graph_bgcolor($color) unless defined $bgcolor;
 
-    my $graph  = GraphViz2->new(
+    my $g = $map->as_graph;
+    $g->set_graph_attribute(graphviz => {
         edge   => { color     => $color,
                     arrowsize => $ARROWSIZE },
         node   => { shape     => $SHAPE     },
-        global => { directed  => $DIRECTED  },
         graph  => { label     => _graph_line_label($line_name, $map->name),
                     labelloc  => $LABELLOC,
-                    bgcolor   => $bgcolor });
-
+                    bgcolor   => $bgcolor }
+    });
     my $skip = $map->{skip};
-    my @stations = @{$line->get_stations};
-    foreach my $node (sort {$a->name cmp $b->name} @stations) {
-        my $from = $node->name;
-        $graph->add_node(name      => $from,
-                         color     => $color,
-                         fontcolor => $color);
-        foreach (split /\,/,$node->link) {
-            my $to = $map->get_node_by_id($_);
-            next if (defined $skip
-                     &&
-                     (exists $skip->{$line_name}->{$from}->{$to->name}
-                      ||
-                      exists $skip->{$line_name}->{$to->name}->{$from}));
-
-            if (grep /$line_name/, (map { $_->name } @{$to->line})) {
-                $graph->add_edge(from => $from, to => $to->name);
-            }
-            else {
-                $graph->add_edge(from  => $from,
-                                 to    => $to->name,
-                                 style => $STYLE);
-            }
-        }
-    }
-
-    $graph->run(format => 'png')->dot_output;
+    $g->filter_edges(sub { !exists $skip->{$_[3]}{$_[1]}{$_[2]} }) if defined $skip;
+    my @line_v = $g->copy->filter_edges(sub { $_[3] eq $line_name})
+      ->filter_vertices(sub { !$_[0]->is_isolated_vertex($_[1]) })->vertices;
+    my %line = map +($_=>undef), @line_v;
+    my %neighbour = map +($_=>undef), $g->neighbours_by_radius(@line_v, 1);
+    $g->filter_vertices(sub { exists $line{$_[1]} || exists $neighbour{$_[1]} });
+    $g->set_vertex_attribute($_, graphviz=>{color => $color, fontcolor => $color})
+      for @line_v;
+    my %seen;
+    $g->filter_edges(sub {
+      return 0 if exists $neighbour{$_[1]}; # zap if from is neighbour
+      return 0 if exists $line{$_[1]} and exists $line{$_[2]} and $_[3] ne $line_name;
+      return 0 if $_[3] ne $line_name and $seen{$_[1]}{$_[2]}++;
+      $g->set_edge_attribute_by_id(@_[1..3], graphviz=>{style => $STYLE})
+        if $_[3] ne $line_name;
+      1; # keep
+    });
+    GraphViz2->from_graph($g)->run(format => 'png')->dot_output;
 }
 
 sub graph_map_image {
