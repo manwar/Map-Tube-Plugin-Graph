@@ -77,15 +77,15 @@ sub graph_line_image {
                     labelloc  => $LABELLOC,
                     bgcolor   => $bgcolor });
 
-    my $stations = $line->get_stations;
-    foreach my $node (@$stations) {
+    my @stations = @{$line->get_stations};
+    foreach my $node (@stations) {
         $graph->add_node(name      => $node->name,
                          color     => $color,
                          fontcolor => $color);
     }
 
     my $skip = $map->{skip};
-    foreach my $node (@$stations) {
+    foreach my $node (@stations) {
         my $from = $node->name;
         foreach (split /\,/,$node->link) {
             my $to = $map->get_node_by_id($_);
@@ -117,7 +117,7 @@ sub graph_map_image {
     $bgcolor = $BGCOLOR unless defined $bgcolor;
 
     my $graph  = GraphViz2->new(
-        node   => { shape     => $SHAPE     },
+        node   => { shape     => $SHAPE, color => $NODE_COLOR, fontcolor => $NODE_COLOR },
         edge   => { arrowsize => $ARROWSIZE },
         global => { directed  => $DIRECTED  },
         graph  => { label     => _graph_map_label($map->name),
@@ -125,30 +125,26 @@ sub graph_map_image {
                     bgcolor   => $bgcolor
         });
 
-    my $lines    = $map->lines;
-    my $stations = [];
-    foreach my $line (@$lines) {
-        next unless defined ($line->name);
-
+    my (@stations, %station2colour, %station_seen);
+    foreach my $line (grep defined $_->name, @{$map->lines}) {
         foreach my $station (@{$map->get_stations($line->name)}) {
-            push @$stations, $station;
-            my $color  = $NODE_COLOR;
+            next if $station_seen{$station->name}++;
+            push @stations, $station;
             my $_lines = $station->line;
-            $color = $line->color if ((scalar(@$_lines) == 1) && defined $line->color);
-            $graph->add_node(name      => $station->name,
-                             color     => $color,
-                             fontcolor => $color);
+            next unless @$_lines == 1 && defined $line->color;
+            $station2colour{$station->name} = $line->color;
         }
     }
 
-    my $seen = {};
-    foreach my $station (@$stations) {
+    my %seen;
+    foreach my $station (sort {$a->name cmp $b->name} @stations) {
         my $from = $station->name;
-        foreach (split /\,/,$station->link) {
-            my $to = $map->get_node_by_id($_);
-            next if $seen->{$from}->{$to->name};
-            $graph->add_edge(from => $from, to => $to->name);
-            $seen->{$from}->{$to->name} = 1;
+        foreach (sort split /\,/,$station->link) {
+            my $to = $map->get_node_by_id($_)->name;
+            next if $seen{$from}{$to}++;
+            $graph->add_node(name => $from, color => $station2colour{$from}, fontcolor => delete $station2colour{$from})
+              if exists $station2colour{$from};
+            $graph->add_edge(from => $from, to => $to);
         }
     }
 
