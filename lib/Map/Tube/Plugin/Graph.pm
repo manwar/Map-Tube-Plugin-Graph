@@ -17,6 +17,7 @@ use 5.006;
 use Data::Dumper;
 use Map::Tube::Plugin::Graph::Utils qw(graph_line_image graph_map_image);
 use MIME::Base64;
+use Graph;
 
 use Moo::Role;
 use namespace::autoclean;
@@ -64,6 +65,75 @@ For example, on my Windows 11 box running WSL2 (Ubuntu 24.04 LTS), try this:
     $ sudo apt install libgraphviz2-perl
 
 =head1 METHODS
+
+=head2 as_graph
+
+Returns a C<multiedged>, directed L<Graph> object with the entire map.
+You can do graph-theory stuff with it yourself, or even control a
+visualisation using the L<GraphViz2/from_graph> API:
+
+  use Map::Tube::London;
+  # a convention with GraphViz2 is to have a separate decorating function:
+  sub graphvizify {
+    my ($g) = @_;
+    my $l2c = $g->get_graph_attribute('line2colour');
+    for my $ft ($g->edges) {
+      $g->set_edge_attribute_by_id(@$ft, $_, graphviz=>{color=>$l2c->{$_}})
+        for $g->get_multiedge_ids(@$ft);
+    }
+  }
+  $tube = Map::Tube::London->new;
+  $g = $tube->as_graph->undirected_copy_attributes; # make undirected version
+  graphvizify($g);
+  binmode STDOUT;
+  print +GraphViz2->from_graph($g)
+    ->run(format=>"png",driver=>"neato") # neato, because dot is bad undirected
+    ->dot_output;
+
+Or you can show only two lines using L<Graph/filter_edges>:
+
+  # uses same graphvizify as above
+  $g = $tube->as_graph->undirected_copy_attributes; # make undirected version
+  my %keep = map +($_=>1), qw(Central Northern);
+  $g->filter_edges(sub { $keep{$_[3]} });
+  $g->filter_vertices(sub { !$_[0]->is_isolated_vertex($_[1]) });
+  graphvizify($g);
+  # binmode and print as above
+
+=cut
+
+sub as_graph {
+  my ($self) = @_;
+  my $g = Graph->new(multiedged=>1);
+  my (%station2line, %station2station);
+  for my $station (@{ $self->get_stations }) {
+    my $from = $station->name;
+    @{ $station2line{$from} }{ map $_->name, @{$station->line} } = ();
+    @{ $station2station{$from} }{
+      map $self->get_node_by_id($_)->name, split /\,/,$station->link
+    } = ();
+  }
+  for my $from (keys %station2station) {
+    my @tos = keys %{$station2station{$from}};
+    for my $line (keys %{ $station2line{$from} }) {
+      for my $to_on_line (grep exists $station2line{$_}{$line}, @tos) {
+        # gives false positive for Northern between Waterloo and Bank
+        $g->add_edge_by_id($from, $to_on_line, $line);
+        delete $station2station{$from}{$to_on_line};
+      }
+    }
+  }
+  delete $station2station{$_}
+    for grep !keys %{$station2station{$_}}, keys %station2station;
+  for my $f (sort keys %station2station) {
+    warn qq{Map has link from "$f" to "$_" but no lines in common\n}
+      for sort keys %{$station2station{$f}};
+  }
+  $g->set_graph_attribute(line2colour=>+{
+    map +($_->name=>$_->color), @{$self->lines}
+  });
+  $g;
+}
 
 =head2 as_png($line_name)
 

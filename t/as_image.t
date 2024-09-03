@@ -13,4 +13,7 @@ is $@, '';
 eval { $tube->as_png('Bakerloo'); };
 is $@, '';
 
+my $g = $tube->as_graph;
+isnt scalar $g->successors('Bank'), 0;
+
 done_testing;
