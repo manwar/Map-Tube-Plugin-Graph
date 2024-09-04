@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph::Utils;
 
-$Map::Tube::Plugin::Graph::Utils::VERSION   = '0.43';
+$Map::Tube::Plugin::Graph::Utils::VERSION   = '0.44';
 $Map::Tube::Plugin::Graph::Utils::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Map::Tube::Plugin::Graph::Utils - Helper package for Map::Tube::Plugin::Graph.
 
 =head1 VERSION
 
-Version 0.43
+Version 0.44
 
 =cut
 
@@ -208,7 +208,7 @@ sub _graph_contrast_color {
 
 =head1 AUTHOR
 
-Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
+Mohammad Sajid Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 REPOSITORY
 
@@ -216,8 +216,7 @@ L<https://github.com/manwar/Map-Tube-Plugin-Graph>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-map-tube at rt.cpan.org>, or
-through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Map-Tube-Plugin-Graph>.
+Please report any bugs or feature requests through the web interface at L<https://github.com/manwar/Map-Tube-Plugin-Graph/issues>.
 I will be notified and then you'll automatically be notified of progress on your
 bug as I make changes.
 
@@ -231,9 +230,9 @@ You can also look for information at:
 
 =over 4
 
-=item * RT: CPAN's request tracker (report bugs here)
+=item * BUG Report
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Map-Tube-Plugin-Graph>
+L<https://github.com/manwar/Map-Tube-Plugin-Graph/issues>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
@@ -243,15 +242,15 @@ L<http://annocpan.org/dist/Map-Tube-Plugin-Graph>
 
 L<http://cpanratings.perl.org/d/Map-Tube-Plugin-Graph>
 
-=item * Search CPAN
+=item * Search MetaCPAN
 
-L<http://search.cpan.org/dist/Map-Tube-Plugin-Graph/>
+L<https://metacpan.org/dist/Map-Tube-Plugin-Graph>
 
 =back
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2015 - 2017 Mohammad S Anwar.
+Copyright (C) 2015 - 2024 Mohammad S Anwar.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the the Artistic License (2.0). You may obtain a copy of the full
