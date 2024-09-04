@@ -1,6 +1,6 @@
 package Map::Tube::Plugin::Graph;
 
-$Map::Tube::Plugin::Graph::VERSION   = '0.44';
+$Map::Tube::Plugin::Graph::VERSION   = '0.45';
 $Map::Tube::Plugin::Graph::AUTHORITY = 'cpan:MANWAR';
 
 =head1 NAME
@@ -9,7 +9,7 @@ Map::Tube::Plugin::Graph - Graph plugin for Map::Tube.
 
 =head1 VERSION
 
-Version 0.44
+Version 0.45
 
 =cut
 
@@ -213,14 +213,6 @@ You can also look for information at:
 =item * BUG Report
 
 L<https://github.com/manwar/Map-Tube-Plugin-Graph/issues>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Map-Tube-Plugin-Graph>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Map-Tube-Plugin-Graph>
 
 =item * Search MetaCPAN
 
