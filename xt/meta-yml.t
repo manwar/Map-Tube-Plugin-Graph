@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use 5.006;
+use 5.014;
 use strict; use warnings;
 use Map::Tube::Plugin::Graph;
 use Test::More;
@@ -22,4 +22,4 @@ if ($meta->{provides}) {
     }
 }
 
-done_testing();
+done_testing;
