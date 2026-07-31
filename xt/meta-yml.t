@@ -1,9 +1,11 @@
 #!/usr/bin/perl
-
 use 5.014;
-use strict; use warnings;
+use strict;
+use warnings FATAL => 'all';
 use Map::Tube::Plugin::Graph;
 use Test::More;
+
+plan skip_all => 'for authors only -- define $ENV{AUTHOR_TESTING}' unless ( $ENV{AUTHOR_TESTING} ||  $ENV{RELEASE_TESTING} );
 
 eval "use Test::CPAN::Meta";
 plan skip_all => "Test::CPAN::Meta required for testing MYMETA.yml" if $@;

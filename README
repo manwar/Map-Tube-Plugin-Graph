@@ -1,8 +1,11 @@
-Map::Tube::Plugin::Graph
+A Map::Tube plugin to find lines and stations by partially specified or mistyped names.
 
-This is a graph plugin for L<Map::Tube> to create maps of individual tube lines
-or of a complete tube network. This module is defined as a Moo Role. Once
-installed, it gets plugged into the Map::Tube::* family.
+This is an add-on for the Perl module Map::Tube to display single tube lines or
+whole tube maps in graphical form. The module is a Moo role which gets plugged
+into the Map::Tube::* family automatically once it is installed.
+
+Documentation for the module can be found at
+<https://metacpan.org/pod/Map::Tube::Plugin::Graph>.
 
 INSTALLATION
 

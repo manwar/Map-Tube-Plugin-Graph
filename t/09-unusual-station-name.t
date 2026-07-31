@@ -9,14 +9,13 @@ use Sample;
 
 my @localdir = File::Spec->splitdir($0);
 pop(@localdir);
-
 my $dataname = File::Spec->catfile( @localdir, 'unusual-station-name.xml' );
 my $tube = Sample->new( xml => $dataname );
 
 eval { $tube->as_image(); };
 is( $@, '' );
 
-my ($dot, undef) = $tube->render( format => 'dot' );
+my ($dot, $fname) = $tube->render( format => 'dot' );
+diag($dot);
 like( $dot, qr(Nice station name),     'Nice output to GraphViz' );
 like( $dot, qr(S:trange station name), 'Strange output to GraphViz' );
-

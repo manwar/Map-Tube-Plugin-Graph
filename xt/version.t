@@ -6,9 +6,8 @@ use Test::More;
 
 plan skip_all => 'for authors only -- define $ENV{AUTHOR_TESTING}' unless ( $ENV{AUTHOR_TESTING} ||  $ENV{RELEASE_TESTING} );
 
-# Ensure a recent version of Test::Pod
-my $min_tp = 1.22;
-eval "use Test::Pod $min_tp";
-plan skip_all => "Test::Pod $min_tp required for testing POD" if $@;
+eval 'use Test::Version qw( version_all_ok ), { is_strict => 1, consistent => 1, }';
+plan skip_all => 'Test::Version required for this test' if $@;
+plan tests => 3;
 
-all_pod_files_ok();
+version_all_ok( );
